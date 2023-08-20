@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
@@ -51,6 +53,8 @@ namespace AddressableAutoAddress
             File.WriteAllText(generatePath, fileText);
         }
 
+        private static readonly string FileNamePattern = @"[\w]+";
+        
         private static string GenerateText()
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
@@ -89,20 +93,25 @@ namespace AddressableAutoAddress
                             : last
                     );
 
-                    // スペースは削除
-                    var fieldName = lineBuilder.ToString().Replace(" ", "");
+                    var fieldName = lineBuilder.ToString();
+                    // 英字、数字、記号を抽出する正規表現パターン
+
+
+                    var matches = Regex.Matches(fieldName, FileNamePattern);
+                    var regexFileName = string.Join("", matches.Cast<Match>().Select(match => match.Value));
+
                     // すでに生成しているパスと同じだった場合はしない
-                    if (generateHashSet.Contains(fieldName))
+                    if (generateHashSet.Contains(regexFileName))
                         continue;
                     
                     AppendIndent(indent, $"// {path}");
-                    AppendIndent(indent, $"public static string {fieldName} => \"{entry.address}\";");    
+                    AppendIndent(indent, $"public static string {regexFileName} => \"{entry.address}\";");    
                     if (isFolder)
                         continue;
                     
                     AppendIndent(indent,
-                        $"public static AsyncOperationHandle<{entry.MainAssetType}> {fieldName}Handle => " +
-                        $"Addressables.LoadAssetAsync<{entry.MainAssetType}>({fieldName});");
+                        $"public static AsyncOperationHandle<{entry.MainAssetType}> {regexFileName}Handle => " +
+                        $"Addressables.LoadAssetAsync<{entry.MainAssetType}>({regexFileName});");
                     AppendIndent(indent, "");
                 }
             }
