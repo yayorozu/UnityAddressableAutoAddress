@@ -1,0 +1,14 @@
+{
+  "name": "yorozu.tool.auto-address",
+  "version": "0.0.1",
+  "displayName": "AutoAddress",
+  "description": "The tool that automatically assigns addresses to addressable elements.",
+  "author": {
+    "name": "Yorozu",
+    "email": "hatch.tech.eng@gmail.com",
+    "url": "https://github.com/yayorozu"
+  },
+  "keywords": [
+    "tool"
+  ]
+}
