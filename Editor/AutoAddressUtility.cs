@@ -88,15 +88,12 @@ namespace AddressableAutoAddress
                     var last = splits[length - 1];
                     var isFolder = AssetDatabase.IsValidFolder(path);
                     lineBuilder.Append(
-                        !isFolder
+                        !isFolder && length > 1
                             ? $"_{last.Replace(".", "_")}"
                             : last
                     );
 
                     var fieldName = lineBuilder.ToString();
-                    // 英字、数字、記号を抽出する正規表現パターン
-
-
                     var matches = Regex.Matches(fieldName, FileNamePattern);
                     var regexFileName = string.Join("", matches.Cast<Match>().Select(match => match.Value));
 
