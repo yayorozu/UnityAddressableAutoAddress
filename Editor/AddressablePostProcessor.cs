@@ -5,6 +5,7 @@ using AddressableAutoAddress;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
+using UnityEngine;
 
 public class AddressablePostProcessor : AssetPostprocessor
 {
@@ -38,6 +39,11 @@ public class AddressablePostProcessor : AssetPostprocessor
     private static bool CheckPath(IAutoAddressSetting autoSettings, string[] paths, Mode mode)
     {
         var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+        if (addressableSettings == null)
+        {
+            Debug.LogError("Please Create Addressables Settings");
+            return false;
+        }
         var groups = addressableSettings.groups;
         var dirty = false;
 

@@ -4,6 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEngine;
 
 namespace AddressableAutoAddress
 {
@@ -33,11 +34,18 @@ namespace AddressableAutoAddress
         {
             if (!autoAddressSetting.GeneratePathScript || string.IsNullOrEmpty(autoAddressSetting.GeneratePath))
                 return;
+            
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            if (settings == null)
+            {
+                Debug.LogError("Please Create Addressables Settings");
+                return;
+            }
 
             var generateRootPath = autoAddressSetting.GeneratePath;
 
             var fileText = GenerateText();
-
+            
             // テキストをファイルに出力する
             var generatePath = string.Format($"{generateRootPath}/AutoAddressPath.cs");
             File.WriteAllText(generatePath, fileText);
@@ -45,10 +53,9 @@ namespace AddressableAutoAddress
 
         private static string GenerateText()
         {
-            var builder = new StringBuilder();
-
             var settings = AddressableAssetSettingsDefaultObject.Settings;
-
+            
+            var builder = new StringBuilder();
             var indent = 0;
             AppendIndent(indent, "using UnityEngine;");
             AppendIndent(indent, "using UnityEngine.AddressableAssets;");
