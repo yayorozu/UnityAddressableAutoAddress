@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,6 +71,7 @@ namespace AddressableAutoAddress
 
             var lineBuilder = new StringBuilder();
             var generateHashSet = new HashSet<string>();
+            var directoryHashSet = new Dictionary<string, string>();
 
             foreach (var group in settings.groups)
             {
@@ -82,11 +84,13 @@ namespace AddressableAutoAddress
                     lineBuilder.Clear();
                     var splits = entry.address.Split("/");
                     var length = splits.Length;
-                    for (var i = 0; i < length - 1; i++) lineBuilder.Append(splits[i]);
+                    for (var i = 0; i < length - 1; i++) 
+                        lineBuilder.Append(splits[i]);
 
                     var path = AssetDatabase.GUIDToAssetPath(entry.guid);
                     var last = splits[length - 1];
                     var isFolder = AssetDatabase.IsValidFolder(path);
+                    
                     lineBuilder.Append(
                         !isFolder && length > 1
                             ? $"_{last.Replace(".", "_")}"
@@ -105,11 +109,28 @@ namespace AddressableAutoAddress
                     AppendIndent(indent, $"public static string {regexFileName} => \"{entry.address}\";");    
                     if (isFolder)
                         continue;
-                    
+
+                    var index = regexFileName.IndexOf("_", StringComparison.Ordinal);
+                    if (index >= 0)
+                    {
+                        var parentPath = regexFileName.Substring(0, index);
+                        if (!string.IsNullOrEmpty(parentPath))
+                            directoryHashSet.TryAdd(parentPath, Path.GetDirectoryName(entry.address));
+                    }
+
                     AppendIndent(indent,
                         $"public static AsyncOperationHandle<{entry.MainAssetType}> {regexFileName}Handle => " +
                         $"Addressables.LoadAssetAsync<{entry.MainAssetType}>({regexFileName});");
                     AppendIndent(indent, "");
+                }
+            }
+
+            if (directoryHashSet.Count > 0)
+            {
+                AppendIndent(indent, $"// Directories Path");
+                foreach (var pair in directoryHashSet)
+                {
+                    AppendIndent(indent, $"public static string Dir{pair.Key} => \"{pair.Value}/\";");   
                 }
             }
 
