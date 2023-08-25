@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Unity.Properties;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
@@ -72,6 +73,7 @@ namespace AddressableAutoAddress
             var lineBuilder = new StringBuilder();
             var generateHashSet = new HashSet<string>();
             var directoryHashSet = new Dictionary<string, string>();
+            var directoryFileNames = new Dictionary<string, List<string>>();
 
             foreach (var group in settings.groups)
             {
@@ -116,6 +118,11 @@ namespace AddressableAutoAddress
                         var parentPath = regexFileName.Substring(0, index);
                         if (!string.IsNullOrEmpty(parentPath))
                             directoryHashSet.TryAdd(parentPath, Path.GetDirectoryName(entry.address));
+
+                        if (!directoryFileNames.ContainsKey(parentPath))
+                            directoryFileNames.Add(parentPath, new List<string>());
+                        
+                        directoryFileNames[parentPath].Add(Path.GetFileName(entry.address));
                     }
 
                     AppendIndent(indent,
@@ -130,7 +137,17 @@ namespace AddressableAutoAddress
                 AppendIndent(indent, $"// Directories Path");
                 foreach (var pair in directoryHashSet)
                 {
-                    AppendIndent(indent, $"public static string Dir{pair.Key} => \"{pair.Value}/\";");   
+                    AppendIndent(indent, $"public static string Dir{pair.Key} => \"{pair.Value}/\";");
+                    if (directoryFileNames.TryGetValue(pair.Key, out var values))
+                    {
+                        AppendIndent(indent++, $"public static string[] Dir{pair.Key}Files => new string[] {{");
+                        foreach (var value in values.OrderBy(v => v))
+                        {
+                            AppendIndent(indent, $"\"{value}\",");
+                        }
+                        
+                        AppendIndent(--indent, "};");
+                    }
                 }
             }
 
