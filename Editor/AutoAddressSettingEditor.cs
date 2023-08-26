@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace AddressableAutoAddress
 {
@@ -10,6 +11,8 @@ namespace AddressableAutoAddress
         private SerializedProperty FolderRegex;
         private SerializedProperty GeneratePathScript;
         private SerializedProperty ScriptGenerateFolder;
+        private SerializedProperty GeneratePathScriptFolder;
+        private SerializedProperty GeneratePathScriptFolderFiles;
         
         private void OnEnable()
         {
@@ -18,6 +21,8 @@ namespace AddressableAutoAddress
             FolderRegex = serializedObject.FindProperty(nameof(AutoAddressSetting.FolderRegex));
             GeneratePathScript = serializedObject.FindProperty(nameof(AutoAddressSetting.GeneratePathScript));
             ScriptGenerateFolder = serializedObject.FindProperty(nameof(AutoAddressSetting.ScriptGenerateFolder));
+            GeneratePathScriptFolder = serializedObject.FindProperty(nameof(AutoAddressSetting.GeneratePathScriptFolder));
+            GeneratePathScriptFolderFiles = serializedObject.FindProperty(nameof(AutoAddressSetting.GeneratePathScriptFolderFiles));
         }
 
         public override void OnInspectorGUI()
@@ -48,6 +53,8 @@ namespace AddressableAutoAddress
                         using (new EditorGUI.IndentLevelScope())
                         {
                             AutoAddressUtility.OnGUIFolder(ScriptGenerateFolder);
+                            EditorGUILayout.PropertyField(GeneratePathScriptFolder, new GUIContent("Folder Path"));
+                            EditorGUILayout.PropertyField(GeneratePathScriptFolderFiles, new GUIContent("Folder Files Path"));
                         }
                     }
                 }

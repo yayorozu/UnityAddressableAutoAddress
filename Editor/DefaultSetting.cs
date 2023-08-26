@@ -10,5 +10,7 @@ namespace AddressableAutoAddress
         public bool GeneratePathScript => false;
         
         public string GeneratePath => "";
+        public bool GeneratePathFolder => false;
+        public bool GeneratePathFolderFiles => false;
     }
 }

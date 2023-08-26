@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Unity.Properties;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace AddressableAutoAddress
 
             var generateRootPath = autoAddressSetting.GeneratePath;
 
-            var fileText = GenerateText();
+            var fileText = GenerateText(autoAddressSetting);
             
             // テキストをファイルに出力する
             var generatePath = string.Format($"{generateRootPath}/AutoAddressPath.cs");
@@ -57,7 +58,7 @@ namespace AddressableAutoAddress
 
         private static readonly string FileNamePattern = @"[\w]+";
         
-        private static string GenerateText()
+        private static string GenerateText(IAutoAddressSetting autoSettings)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             
@@ -137,8 +138,13 @@ namespace AddressableAutoAddress
                 AppendIndent(indent, $"// Directories Path");
                 foreach (var pair in directoryHashSet)
                 {
-                    AppendIndent(indent, $"public static string Dir{pair.Key} => \"{pair.Value}/\";");
-                    if (directoryFileNames.TryGetValue(pair.Key, out var values))
+                    if (autoSettings.GeneratePathFolder)
+                    {
+                        AppendIndent(indent, $"public static string Dir{pair.Key} => \"{pair.Value}/\";");
+                    }
+
+                    if (autoSettings.GeneratePathFolderFiles &&
+                        directoryFileNames.TryGetValue(pair.Key, out var values))
                     {
                         AppendIndent(indent++, $"public static string[] Dir{pair.Key}Files => new string[] {{");
                         foreach (var value in values.OrderBy(v => v))

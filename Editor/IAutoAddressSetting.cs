@@ -13,5 +13,7 @@ namespace AddressableAutoAddress
         bool GeneratePathScript { get; }
         
         string GeneratePath { get; }
+        bool GeneratePathFolder { get; }
+        bool GeneratePathFolderFiles { get; }
     }
 }

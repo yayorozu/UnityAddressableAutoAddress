@@ -29,7 +29,15 @@ namespace AddressableAutoAddress
 
         [SerializeField, HideInInspector]
         internal DefaultAsset ScriptGenerateFolder;
+        
+        [SerializeField, HideInInspector]
+        internal bool GeneratePathScriptFolder;
+        
+        [SerializeField, HideInInspector]
+        internal bool GeneratePathScriptFolderFiles;
 
         string IAutoAddressSetting.GeneratePath => AssetDatabase.GetAssetPath(ScriptGenerateFolder);
+        bool IAutoAddressSetting.GeneratePathFolder => GeneratePathScriptFolder;
+        bool IAutoAddressSetting.GeneratePathFolderFiles => GeneratePathScriptFolderFiles;
     }
 }
