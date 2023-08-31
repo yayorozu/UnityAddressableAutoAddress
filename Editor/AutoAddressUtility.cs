@@ -126,9 +126,14 @@ namespace AddressableAutoAddress
                         directoryFileNames[parentPath].Add(Path.GetFileName(entry.address));
                     }
 
-                    AppendIndent(indent,
-                        $"public static AsyncOperationHandle<{entry.MainAssetType}> {regexFileName}Handle => " +
-                        $"Addressables.LoadAssetAsync<{entry.MainAssetType}>({regexFileName});");
+                    // internal クラスはエラーになるので
+                    if (entry.MainAssetType.IsVisible)
+                    {
+                        AppendIndent(indent,
+                            $"public static AsyncOperationHandle<{entry.MainAssetType}> {regexFileName}Handle => " +
+                            $"Addressables.LoadAssetAsync<{entry.MainAssetType}>({regexFileName});");
+                    }
+
                     AppendIndent(indent, "");
                 }
             }
