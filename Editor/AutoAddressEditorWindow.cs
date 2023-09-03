@@ -6,7 +6,7 @@ namespace AddressableAutoAddress
 {
     internal class AutoAddressEditorWindow : EditorWindow
     {
-        [MenuItem("Yorozu/AddressableAutoAddress")]
+        [MenuItem("Tools/AddressableAutoAddress")]
         private static void ShowWindow()
         {
             var window = GetWindow<AutoAddressEditorWindow>();
